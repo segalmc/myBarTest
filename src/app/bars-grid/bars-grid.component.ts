@@ -11,7 +11,7 @@ export class BarsGridComponent implements AfterViewInit {
   @Input() options: any;
 
   private _contentHeight: number = 0;
-  private numOfRows: number = 0 ;
+  private numOfRows: number = 0;
   private jumpMinutes: number = 0;
   private durationMinutes: number = 0;
   private oneHourInPixels: number = 0;
@@ -19,6 +19,7 @@ export class BarsGridComponent implements AfterViewInit {
   private initGridTime: Moment = moment();
   rows: any[] = [];
   stackedBars: any[] = [];
+
   constructor(element: ElementRef) {
     this.containerElement = element;
   }
@@ -26,14 +27,15 @@ export class BarsGridComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.validateInputs();
     this._contentHeight = (<HTMLElement>this.containerElement.nativeElement).getBoundingClientRect().height;
-    this.createRows(this.options.timeRange, this.options.rowHeight);
+    this.createRows(this.options.rowHeight);
+    this.createStackedBars();
   }
 
   private validateInputs() {
-    if(!this.options) {
+    if (!this.options) {
       throw new Error('Expected options');
     }
-    if(!(this.options.rowHeight && this.options.rowHeight > 13)) {
+    if (!(this.options.rowHeight && this.options.rowHeight > 13)) {
       throw new Error('Expected rowHeight in px (minimum value 14)');
     }
 
@@ -50,23 +52,23 @@ export class BarsGridComponent implements AfterViewInit {
     return numOfHours * this.oneHourInPixels;
   }
 
-  createRows(timeRange: {startTime: Date, endTime:Date}, rowHeight: number) {
+  createRows(rowHeight: number) {
     this.numOfRows = Math.round(this._contentHeight / rowHeight);
-    let startGridTime = moment(timeRange.startTime).startOf('hour');
-    this.initGridTime = moment(timeRange.startTime).startOf('hour');
-    let endGridTime = moment(timeRange.endTime);
+    let startGridTime = moment(this.options.timeRange.startTime).startOf('hour');
+    this.initGridTime = moment(this.options.timeRange.startTime).startOf('hour');
+    let endGridTime = moment(this.options.timeRange.endTime);
 
     this.durationMinutes = moment.duration(endGridTime.diff(startGridTime)).asMinutes();
     this.oneHourInPixels = this._contentHeight / (this.durationMinutes / 60);
     this.jumpMinutes = Math.floor(this.durationMinutes / (this.numOfRows - 1));
 
-    const roundJumpMinutes = Math.floor(this.jumpMinutes/5) * 5; //round to nearest 5 minutes
+    const roundJumpMinutes = Math.floor(this.jumpMinutes / 5) * 5; //round to nearest 5 minutes
 
     if (((this.jumpMinutes - roundJumpMinutes) * (this.numOfRows - 1)) < (this.jumpMinutes * 2)) {
       this.jumpMinutes = roundJumpMinutes;
     }
 
-    this.rows.push({time: timeRange.startTime, top: this.calculatePlaceOfRow(moment(timeRange.startTime))});
+    this.rows.push({time: this.options.timeRange.startTime, top: this.calculatePlaceOfRow(moment(this.options.timeRange.startTime))});
 
     if (this.numOfRows > 2) {
       for (let i = 1; i < this.numOfRows; i += 1) {
@@ -78,24 +80,35 @@ export class BarsGridComponent implements AfterViewInit {
       }
     }
 
-    this.rows.push({time: timeRange.endTime, top: this.calculatePlaceOfRow(moment(timeRange.endTime))});
+    this.rows.push({time: this.options.timeRange.endTime, top: this.calculatePlaceOfRow(moment( this.options.timeRange.endTime))});
   }
 
+  private calculateHeight(startTime: Date, endTime: Date) {
+    if (typeof startTime.getTime === 'function' && typeof endTime.getTime === 'function' && (endTime.getTime() > startTime.getTime())) {
+      return this.calculatePlaceOfRow(moment(endTime)) - this.calculatePlaceOfRow(moment(startTime));
+    }
+    return false;
+  }
   createStackedBars() {
     if (!(this.options.stackedBars && this.options.stackedBars.length > 0)) {
       return;
     }
 
-    for(let i = 0; i < this.options.stackedBars.length; i += 1) {
-      if (typeof this.options.stackedBars[i].endTime === 'function') {
-        //this.options.stackedBars[i].height =
-        if (i > 0) {
-          if(this.options.stackedBars[i].endTime.getTime() > this.options.stackedBars[i - 1].endTime.getTime()) {
-            this.stackedBars.push(this.options.stackedBars[i]);
-          }
+    for (let i = 0; i < this.options.stackedBars.length; i += 1) {
+      this.options.stackedBars[i].isValid = true;
+      for (let x = 0; x < this.options.stackedBars[i].length; x += 1) {
+        if (x > 0) {
+          this.options.stackedBars[i][x].height = this.calculateHeight(this.options.stackedBars[i][x - 1].endTime, this.options.stackedBars[i][x].endTime);
         } else {
-          this.stackedBars.push(this.options.stackedBars[i]);
+          this.options.stackedBars[i][x].height = this.calculateHeight(this.options.timeRange.startTime, this.options.stackedBars[i][x].endTime);
         }
+        if (!this.options.stackedBars[i][x].height) {
+          this.options.stackedBars[i].isValid = false;
+          break;
+        }
+      }
+      if (this.options.stackedBars[i].isValid) {
+        this.stackedBars.push(this.options.stackedBars[i]);
       }
     }
   }

@@ -25,10 +25,7 @@ export class AppComponent {
         startTime: new Date('1/6/2021 07:02'),
         endTime: new Date('1/6/2021 18:02')
       },
-      stackedBars: [
-        {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems},
-        {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}, {stackBar: this.stackedItems}
-      ]
+      stackedBars: [this.stackedItems, this.stackedItems, this.stackedItems, this.stackedItems, this.stackedItems]
     }
   };
 }
