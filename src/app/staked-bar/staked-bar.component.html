@@ -1,0 +1,29 @@
+<div class="stacked-bar-wrapper">
+  <div *ngFor="let item of stackedItems"
+       class="bar-item"
+       [style.background-color]="item.color"
+       [style.height]="item.height + 'px'">
+    <div class="tooltip-position-small"
+         [ngbTooltip]="tooltipContent"
+         #tooltip="ngbTooltip"
+         placement="top"
+         container="body"
+         [disableTooltip]="!item.tooltipData"
+    ></div>
+    <div class="tooltip-position-big"
+         [ngbTooltip]="tooltipContent"
+         #tooltip="ngbTooltip"
+         placement="top"
+         container="body"
+         [disableTooltip]="!item.tooltipData"
+    ></div>
+    <ng-template #tooltipContent>
+      <div *ngFor="let tooltip of item.tooltipData">
+        <span class="tooltip-item-title">{{objectKey(tooltip)}}</span>
+        <span *ngIf="objectValue(tooltip).indexOf('-') === -1">&nbsp;{{objectValue(tooltip)}}</span>
+        <div *ngIf="objectValue(tooltip).indexOf('-') > -1">{{objectValue(tooltip)}}</div>
+      </div>
+    </ng-template>
+  </div>
+
+</div>
