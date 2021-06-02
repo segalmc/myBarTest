@@ -28,7 +28,7 @@ export class BarsGridComponent implements AfterViewInit {
     this.validateInputs();
     this._contentHeight = (<HTMLElement>this.containerElement.nativeElement).getBoundingClientRect().height;
     this.createRows(this.options.rowHeight);
-    this.createStackedBars();
+    setTimeout(() => {this.createStackedBars();});
   }
 
   private validateInputs() {
