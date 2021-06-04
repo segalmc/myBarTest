@@ -31,9 +31,21 @@
   position: relative;
   display: flex;
 
+  .axis-conainer {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 50px;
+  }
+  .content-wrapper {
+    flex: 0 0 200px;
+    overflow: hidden;
+  }
+
   .scroll-container {
     overflow-x: auto;
     overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .rows-and-columns-wrapper {
@@ -67,12 +79,10 @@
     }
   }
 
-
   .axis-y-wrapper {
     height: 100%;
     position: relative;
     color: #979797;
-    flex: 0 0 50px;
 
     .axis-y-value {
       font-size: 10px;
