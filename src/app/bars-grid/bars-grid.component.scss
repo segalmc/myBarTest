@@ -27,8 +27,19 @@
 .grid-wrapper {
   height: 100%;
   width: 100%;
+  padding: 30px;
   position: relative;
+  display: flex;
 
+  .scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .rows-and-columns-wrapper {
+    height: 100%;
+    position: relative;
+  }
   .rows-wrapper {
     position: absolute;
     height: 100%;
@@ -40,41 +51,35 @@
       height: 1px;
     }
   }
-  .columns-container {
+  .cols-wrapper {
     position: absolute;
+    height: 100%;
     width: 100%;
-    height: calc(100% + 5px);
-    overflow-x: scroll;
-    overflow-y: hidden;
-    .cols-wrapper {
-      display: flex;
-      flex-direction: row;
-      height: 100%;
-
+    display: flex;
     .stacked-bar-container {
       position: absolute;
       width: 55px;
     }
-      .grid-col {
-        border-right: 1px solid gray;
-        display: flex;
-        justify-content: center;
-        width: 180px;
-      }
+    .grid-col {
+      border-right: 1px solid gray;
+      display: flex;
+      justify-content: center;
     }
   }
 
 
   .axis-y-wrapper {
     height: 100%;
-    position: absolute;
+    position: relative;
     color: #979797;
-    width: 40px;
-    margin-left: -39px;
+    flex: 0 0 50px;
 
     .axis-y-value {
-      font-size: 1vh;
+      font-size: 10px;
       position: absolute;
+      width: 90%;
+      text-align: right;
+      white-space: nowrap;
     }
   }
 }

@@ -1,4 +1,4 @@
-import {Component, ElementRef, AfterViewInit, Input} from '@angular/core';
+import {Component, ElementRef, AfterViewInit, Input, ViewChild, HostListener} from '@angular/core';
 import * as moment from 'moment';
 import {Moment} from "moment";
 
@@ -12,29 +12,45 @@ export class BarsGridComponent implements AfterViewInit {
 
   private _contentHeight: number = 0;
   private numOfRows: number = 0;
+
   private jumpMinutes: number = 0;
   private durationMinutes: number = 0;
   private oneHourInPixels: number = 0;
-  private containerElement: ElementRef
   private initGridTime: Moment = moment();
   rows: any[] = [];
   stackedBars: any[] = [];
+  columnsContainerWidth: number = 0;
 
-  constructor(element: ElementRef) {
-    this.containerElement = element;
+  @ViewChild('gridwrapper') gridwrapper?: ElementRef;
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.initGrid();
+  }
+
+  constructor() {
+
+  }
+
+  private initGrid() {
+    this._contentHeight = this.gridwrapper? (<HTMLElement>this.gridwrapper.nativeElement).getBoundingClientRect().height - 2 : 0;
+    this.createRows(this.options.rowHeight);
+    this.createStackedBars(this.options.colWidth);
   }
 
   ngAfterViewInit(): void {
     this.validateInputs();
-    this._contentHeight = (<HTMLElement>this.containerElement.nativeElement).getBoundingClientRect().height;
-    this.createRows(this.options.rowHeight);
-    setTimeout(() => {this.createStackedBars();});
+    setTimeout(() => {this.initGrid();});
   }
 
   private validateInputs() {
+    if (!this.gridwrapper) {
+      throw new Error('The component not rendered');
+    }
     if (!this.options) {
       throw new Error('Expected options');
     }
+
     if (!(this.options.rowHeight && this.options.rowHeight > 13)) {
       throw new Error('Expected rowHeight in px (minimum value 14)');
     }
@@ -52,7 +68,8 @@ export class BarsGridComponent implements AfterViewInit {
     return numOfHours * this.oneHourInPixels;
   }
 
-  createRows(rowHeight: number) {
+  createRows(rowHeight: number = 60) {
+    this.rows = [];
     this.numOfRows = Math.round(this._contentHeight / rowHeight);
     let startGridTime = moment(this.options.timeRange.startTime).startOf('hour');
     this.initGridTime = moment(this.options.timeRange.startTime).startOf('hour');
@@ -89,11 +106,12 @@ export class BarsGridComponent implements AfterViewInit {
     }
     return false;
   }
-  createStackedBars() {
+  createStackedBars(colWidth: number = 180) {
+    this.stackedBars = [];
     if (!(this.options.stackedBars && this.options.stackedBars.length > 0)) {
       return;
     }
-
+    this.columnsContainerWidth = this.options.stackedBars.length * colWidth;
     for (let i = 0; i < this.options.stackedBars.length; i += 1) {
       this.options.stackedBars[i].isValid = true;
       for (let x = 0; x < this.options.stackedBars[i].length; x += 1) {

@@ -20,7 +20,8 @@ export class AppComponent {
 
   barsGridData = {
     options: {
-      rowHeight: 40,
+      rowHeight: 60,
+      colWidth: 180,
       timeRange: {
         startTime: new Date('1/6/2021 07:02'),
         endTime: new Date('1/6/2021 18:02')

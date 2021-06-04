@@ -1,22 +1,24 @@
 <div class="grid-wrapper">
-  <div class="rows-wrapper">
-    <div class="grid-row" *ngFor="let row of rows" [style.top]="row.top + 'px'"></div>
+  <div class="axis-y-wrapper">
+    <div class="axis-y-value" *ngFor="let row of rows"
+         [style.top]="(row.top - 7) + 'px'">{{row.time | date: 'shortTime'}}</div>
   </div>
-  <div class="columns-container">
-    <div class="cols-wrapper" *ngIf="stackedBars.length > 0">
-      <div class="grid-col" *ngFor="let stackedItems of stackedBars">
-        <div class="stacked-bar-container" [style.top]="rows[0].top + 'px'">
-          <app-staked-bar
-            [stackedItems]="stackedItems">
-          </app-staked-bar>
+  <div class="scroll-container">
+    <ng-content></ng-content>
+    <div class="rows-and-columns-wrapper" #gridwrapper [style.width]="columnsContainerWidth + 'px'">
+      <div class="rows-wrapper">
+        <div class="grid-row" *ngFor="let row of rows" [style.top]="row.top + 'px'"></div>
+      </div>
+      <div class="cols-wrapper" *ngIf="stackedBars.length > 0">
+        <div class="grid-col" *ngFor="let stackedItems of stackedBars" [style.width]="options.colWidth + 'px'">
+          <div class="stacked-bar-container" [style.top]="rows[0].top + 'px'">
+            <app-staked-bar
+              [stackedItems]="stackedItems">
+            </app-staked-bar>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-
-  <div class="axis-y-wrapper">
-    <div class="axis-y-value" *ngFor="let row of rows"  [style.top]="(row.top - 7) + 'px'">{{row.time | date: 'shortTime'}}</div>
   </div>
 
 </div>
