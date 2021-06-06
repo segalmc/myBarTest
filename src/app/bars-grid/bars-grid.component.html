@@ -3,7 +3,7 @@
     <div class="content-wrapper" [style.flex]="customContentHeight"></div>
     <div class="axis-y-wrapper">
       <div class="axis-y-value" *ngFor="let row of rows" [style.top]="(row.top - 7) + 'px'">{{row.time | date:
-        'shortTime'}}</div>
+        'h:mma'}}</div>
     </div>
   </div>
 
