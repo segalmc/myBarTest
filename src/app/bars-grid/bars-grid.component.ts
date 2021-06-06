@@ -20,6 +20,7 @@ export class BarsGridComponent implements AfterViewInit {
   rows: any[] = [];
   stackedBars: any[] = [];
   columnsContainerWidth: number = 0;
+  customContentHeight: string = '0 0 0';
 
   @ViewChild('gridwrapper') gridwrapper?: ElementRef;
 
@@ -34,6 +35,8 @@ export class BarsGridComponent implements AfterViewInit {
 
   private initGrid() {
     this._contentHeight = this.gridwrapper? (<HTMLElement>this.gridwrapper.nativeElement).getBoundingClientRect().height - 2 : 0;
+    this.options.customContentHeight = this.options.customContentHeight ? this.options.customContentHeight: 0;
+    this.customContentHeight = `0 0 ${this.options.customContentHeight}px`;
     this.createRows(this.options.rowHeight);
     this.createStackedBars(this.options.colWidth);
   }

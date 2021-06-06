@@ -22,6 +22,7 @@ export class AppComponent {
     options: {
       rowHeight: 60,
       colWidth: 180,
+      customContentHeight: 100,
       timeRange: {
         startTime: new Date('1/6/2021 07:02'),
         endTime: new Date('1/6/2021 18:02')
