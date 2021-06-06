@@ -18,7 +18,8 @@ export class BarsGridComponent implements AfterViewInit {
   private oneHourInPixels: number = 0;
   private initGridTime: Moment = moment();
   rows: any[] = [];
-  stackedBars: any[] = [];
+  stackedBars: any;
+  stackedBarsArr: any[] = [];
   columnsContainerWidth: number = 0;
   customContentHeight: string = '0 0 0';
 
@@ -59,9 +60,7 @@ export class BarsGridComponent implements AfterViewInit {
     }
 
     if (!(this.options.timeRange &&
-      typeof this.options.timeRange.startTime.getTime === 'function' &&
-      typeof this.options.timeRange.endTime.getTime === 'function' &&
-      this.options.timeRange.endTime.getTime() - this.options.timeRange.startTime.getTime() > 0)) {
+      this.options.timeRange.endTime - this.options.timeRange.startTime > 0)) {
       throw new Error('please provide valid range of times');
     }
   }
@@ -103,33 +102,35 @@ export class BarsGridComponent implements AfterViewInit {
     this.rows.push({time: this.options.timeRange.endTime, top: this.calculatePlaceOfRow(moment( this.options.timeRange.endTime))});
   }
 
-  private calculateHeight(startTime: Date, endTime: Date) {
-    if (typeof startTime.getTime === 'function' && typeof endTime.getTime === 'function' && (endTime.getTime() > startTime.getTime())) {
+  private calculateHeight(startTime: number, endTime: number) {
+    if (endTime > startTime) {
       return this.calculatePlaceOfRow(moment(endTime)) - this.calculatePlaceOfRow(moment(startTime));
     }
     return false;
   }
   createStackedBars(colWidth: number = 180) {
-    this.stackedBars = [];
-    if (!(this.options.stackedBars && this.options.stackedBars.length > 0)) {
+    this.stackedBarsArr = [];
+    if (!(this.options.stackedBars && Object.keys(this.options.stackedBars).length > 0)) {
       return;
     }
-    this.columnsContainerWidth = this.options.stackedBars.length * colWidth;
-    for (let i = 0; i < this.options.stackedBars.length; i += 1) {
-      this.options.stackedBars[i].isValid = true;
-      for (let x = 0; x < this.options.stackedBars[i].length; x += 1) {
+    const stackedBarsKeys = Object.keys(this.options.stackedBars);
+    this.columnsContainerWidth = stackedBarsKeys.length * colWidth;
+    for (let i = 0; i < stackedBarsKeys.length; i += 1) {
+      this.options.stackedBars[stackedBarsKeys[i]].isValid = true;
+      let shifts = this.options.stackedBars[stackedBarsKeys[i]].shifts;
+      for (let x = 0; x < shifts.length; x += 1) {
         if (x > 0) {
-          this.options.stackedBars[i][x].height = this.calculateHeight(this.options.stackedBars[i][x - 1].endTime, this.options.stackedBars[i][x].endTime);
+          shifts[x].height = this.calculateHeight(shifts[x - 1].endTime, shifts[x].endTime);
         } else {
-          this.options.stackedBars[i][x].height = this.calculateHeight(this.options.timeRange.startTime, this.options.stackedBars[i][x].endTime);
+          shifts[x].height = this.calculateHeight(this.options.timeRange.startTime, shifts[x].endTime);
         }
-        if (!this.options.stackedBars[i][x].height) {
-          this.options.stackedBars[i].isValid = false;
+        if (!shifts[x].height) {
+          this.options.stackedBars[stackedBarsKeys[i]].isValid = false;
           break;
         }
       }
-      if (this.options.stackedBars[i].isValid) {
-        this.stackedBars.push(this.options.stackedBars[i]);
+      if (this.options.stackedBars[stackedBarsKeys[i]].isValid) {
+        this.stackedBarsArr.push(shifts);
       }
     }
   }

@@ -16,8 +16,8 @@
       <div class="rows-wrapper">
         <div class="grid-row" *ngFor="let row of rows" [style.top]="row.top + 'px'"></div>
       </div>
-      <div class="cols-wrapper" *ngIf="stackedBars.length > 0">
-        <div class="grid-col" *ngFor="let stackedItems of stackedBars" [style.width]="options.colWidth + 'px'">
+      <div class="cols-wrapper" *ngIf="stackedBarsArr.length > 0">
+        <div class="grid-col" *ngFor="let stackedItems of stackedBarsArr" [style.width]="options.colWidth + 'px'">
           <div class="stacked-bar-container" [style.top]="rows[0].top + 'px'">
             <app-staked-bar [stackedItems]="stackedItems">
             </app-staked-bar>
